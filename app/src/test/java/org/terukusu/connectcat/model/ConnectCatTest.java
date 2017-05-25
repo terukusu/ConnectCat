@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
+import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 
 /**
@@ -31,6 +32,17 @@ public class ConnectCatTest {
     }
 
     @Test
+    public void testConnectSocketAddress() throws  Exception {
+        InetSocketAddress addr = new InetSocketAddress(host, port);
+
+        ConnectCat instance = ConnectCat.getInstance();
+        Assert.assertNotNull("instance should not be null.", instance);
+
+        instance.connect(addr);
+        Assert.assertTrue("should be connected.", instance.isConnected());
+    }
+
+    @Test
     public void testDisconnect() throws  Exception {
         ConnectCat instance = ConnectCat.getInstance();
         Assert.assertNotNull("instance should not be null.", instance);
@@ -53,25 +65,4 @@ public class ConnectCatTest {
         instance.disconnect();
         Assert.assertTrue("should be closed.", instance.isClosed());
     }
-
-    @Test
-    public void testReceive() throws Exception {
-        ConnectCat instance = ConnectCat.getInstance();
-        Assert.assertNotNull("instance should not be null.", instance);
-
-        instance.connect(host, port);
-        Assert.assertTrue("should be connected.", instance.isConnected());
-
-        instance.send("GET / HTTP/1.0\n\n".getBytes(Charset.forName("UTF-8")));
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        instance.receive(baos);
-
-        Assert.assertTrue("data size should not be  0", baos.size() > 0);
-
-        instance.disconnect();
-        Assert.assertTrue("should be closed.", instance.isClosed());
-    }
-
-
 }
